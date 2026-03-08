@@ -2,13 +2,30 @@ const tabContainer = document.getElementById("tabContainer");
 const allIssuesContainer = document.getElementById("allIssues");
 const openIssuesContainer = document.getElementById("openIssues");
 const closedIssuesContainer = document.getElementById("closedIssues");
+let activeTab = allIssuesContainer; // use let, not const
 
+// Spinner manage
+const manageSpinner = (status, tab = activeTab) => {
+    const spinner = document.getElementById("spinner");
+    if (status) {
+        spinner.classList.remove("hidden");
+        spinner.classList.add("flex");
+        tab.classList.remove("grid");
+        tab.classList.add("hidden");
+    } else {
+        spinner.classList.remove("flex");
+        spinner.classList.add("hidden");
+        tab.classList.remove("hidden");
+        tab.classList.add("grid");
+    }
+};
+
+// Tab switching
 tabContainer.addEventListener("click", function (e) {
     const tab = e.target.closest(".btn");
     if (!tab) return;
 
     const tabs = tabContainer.querySelectorAll(".btn");
-
     tabs.forEach(t => {
         t.classList.remove("btn-primary");
         t.classList.add("text-[#64748B]");
@@ -16,36 +33,32 @@ tabContainer.addEventListener("click", function (e) {
 
     tab.classList.remove("text-[#64748B]");
     tab.classList.add("btn-primary");
-    const contain = [allIssuesContainer,openIssuesContainer,closedIssuesContainer];
 
-    contain.forEach(container => {
-        container.classList.remove("grid");
-        container.classList.add("hidden");
+    [allIssuesContainer, openIssuesContainer, closedIssuesContainer].forEach(c => {
+        c.classList.remove("grid");
+        c.classList.add("hidden");
     });
-    if (tab.innerText === "All") {
-        allIssuesContainer.classList.remove("hidden");
-        allIssuesContainer.classList.add("grid");
-    }
-    else if (tab.innerText === "Open") {
-        openIssuesContainer.classList.remove("hidden");
-        openIssuesContainer.classList.add("grid");
-    }
-    else {
-        closedIssuesContainer.classList.remove("hidden");
-        closedIssuesContainer.classList.add("grid");
-    }
+
+    if (tab.innerText === "All") activeTab = allIssuesContainer;
+    else if (tab.innerText === "Open") activeTab = openIssuesContainer;
+    else activeTab = closedIssuesContainer;
+
+    activeTab.classList.remove("hidden");
+    activeTab.classList.add("grid");
 });
 
-
+// Load issues from API
 function loadIssues() {
+    manageSpinner(true);
     fetch("https://phi-lab-server.vercel.app/api/v1/lab/issues")
         .then(res => res.json())
-        .then(data => showIssues(data.data));
+        .then(data => showIssues(data.data))
+        .catch(err => console.error(err));
 }
 
 loadIssues();
 
-
+// Priority and status classes
 const priorityClasses = {
     HIGH: "bg-[#FEECEC] text-[#EF4444]",
     MEDIUM: "bg-[#FFF6D1] text-[#F59E0B]",
@@ -54,24 +67,20 @@ const priorityClasses = {
 const statusClasses = {
     OPEN: "border-t-4 border-t-green-500",
     CLOSED: "border-t-4 border-t-purple-500"
-}
+};
 
 
 function showIssues(issues) {
-    allIssuesContainer.innerHTML = "";
-    openIssuesContainer.innerHTML = "";
-    closedIssuesContainer.innerHTML = "";
+    [allIssuesContainer, openIssuesContainer, closedIssuesContainer].forEach(c => c.innerHTML = "");
 
     issues.forEach(issue => {
         const prio = issue.priority.toUpperCase();
         const prioClass = priorityClasses[prio];
         const status = issue.status.toUpperCase();
         const borderTop = statusClasses[status];
-
         const date = new Date(issue.createdAt);
         const formattedDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
 
-        // Function to create an issue card
         function createIssueCard() {
             const card = document.createElement("div");
             card.className = `bg-white rounded-2xl shadow-md border border-gray-200 p-2 space-y-2 ${borderTop}`;
@@ -98,9 +107,12 @@ function showIssues(issues) {
             return card;
         }
 
-        // Append separate cards to each container
+        // Append cards
         allIssuesContainer.appendChild(createIssueCard());
         if (status === "OPEN") openIssuesContainer.appendChild(createIssueCard());
         else closedIssuesContainer.appendChild(createIssueCard());
     });
+
+    // Hide spinner
+    manageSpinner(false);
 }
