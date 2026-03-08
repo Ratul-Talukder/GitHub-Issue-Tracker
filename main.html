@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GitHub Issue Tracker</title>
+
+    <!-- Tailwind + DaisyUI -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@5"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <!-- Font Awesome Free -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+      integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body>
+    <!-- Header section -->
+    <section class="border-b border-b-slate-300">
+      <div
+        class="navbar w-11/12 mx-auto shadow-sm flex justify-between items-center py-3"
+      >
+        <!-- Left -->
+        <div class="flex items-center gap-2">
+          <img
+            src="./assets/github-logo.png"
+            class="h-10 w-10 object-contain"
+            alt="logo"
+          />
+          <h2 class="text-xl font-semibold">GitHub Issues Tracker</h2>
+        </div>
+
+        <!-- Right: Search -->
+        <div>
+          <input
+            type="text"
+            placeholder="Search issues..."
+            class="input w-32 md:w-auto"
+          />
+          <button class="btn btn-primary">+ New Issue</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab -->
+    <div
+      id="tabContainer"
+      class="mt-10 p-4 w-9/12 mx-auto flex gap-2 shadow-md"
+    >
+      <button class="btn btn-primary">All</button>
+      <button class="btn text-[#64748B]">Open</button>
+      <button class="btn text-[#64748B]">Closed</button>
+    </div>
+
+    <!-- Spinner Section -->
+    <div id="spinner" class="hidden justify-center items-center mt-14">
+      <span class="loading loading-spinner text-secondary"></span>
+    </div>
+
+    <!-- all issues container -->
+    <div
+      id="allIssues"
+      class="p-2 w-9/12 mx-auto grid grid-cols-4 gap-2  "
+    ></div>
+
+    <!-- Open issues container -->
+    <div
+      id="openIssues"
+      class="p-2 w-9/12 mx-auto hidden grid-cols-4 gap-2 "
+    ></div>
+
+    <!-- Closed issues container -->
+    <div
+      id="closedIssues"
+      class="p-2 w-9/12 mx-auto hidden grid-cols-4 gap-2 " 
+    ></div>
+
+
+
+
+
+
+    <script src="./script/script.js"></script>
+  </body>
+</html>

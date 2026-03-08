@@ -3,9 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GitHub Issue Tracker</title>
-
-    <!-- Tailwind + DaisyUI -->
+    <title>Sign in</title>
+    <link
+      rel="shortcut icon"
+      href="./assets/github-logo.png"
+      type="image/x-icon"
+    />
+    <!-- Tailwind and DaisyUI -->
     <link
       href="https://cdn.jsdelivr.net/npm/daisyui@5"
       rel="stylesheet"
@@ -13,7 +17,7 @@
     />
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
-    <!-- Font Awesome Free -->
+    <!-- Font-Awesome-CDN -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
@@ -22,72 +26,51 @@
       referrerpolicy="no-referrer"
     />
   </head>
-  <body>
-    <!-- Header section -->
-    <section class="border-b border-b-slate-300">
-      <div
-        class="navbar w-11/12 mx-auto shadow-sm flex justify-between items-center py-3"
-      >
-        <!-- Left -->
-        <div class="flex items-center gap-2">
-          <img
-            src="./assets/github-logo.png"
-            class="h-10 w-10 object-contain"
-            alt="logo"
-          />
-          <h2 class="text-xl font-semibold">GitHub Issues Tracker</h2>
-        </div>
-
-        <!-- Right: Search -->
-        <div>
-          <input
-            type="text"
-            placeholder="Search issues..."
-            class="input w-32 md:w-auto"
-          />
-          <button class="btn btn-primary">+ New Issue</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- Tab -->
+  <body class="min-h-screen flex items-center justify-center">
     <div
-      id="tabContainer"
-      class="mt-10 p-4 w-9/12 mx-auto flex gap-2 shadow-md"
+      class="w-1/3 mx-auto  p-8 flex flex-col items-center shadow-lg"
     >
-      <button class="btn btn-primary">All</button>
-      <button class="btn text-[#64748B]">Open</button>
-      <button class="btn text-[#64748B]">Closed</button>
+      <!-- Image Div -->
+      <div class="w-11/12 flex flex-col justify-center items-center mb-4">
+        <img src="./assets/github-logo.png" class="my-6" />
+        <h2 class="text-2xl font-bold">GitHub Issues Tracker</h2>
+        <p class="text-[#64748B]">Sign in to manage your issues</p>
+      </div>
+
+      <!-- Sign In form -->
+      <fieldset class="w-11/12 fieldset rounded-box">
+        <label class="label font-semibold text-[16px] text-black"
+          >Username</label
+        >
+        <input type="email" class="input w-full" placeholder="Enter Username" />
+
+        <label class="label font-semibold text-[16px] text-black"
+          >Password</label
+        >
+        <input
+          type="password"
+          class="input w-full"
+          placeholder="Enter Password"
+        />
+        <a href="./main.html" class="btn btn-primary mt-4">Sign In</a>
+        
+      </fieldset>
+
+      <!-- OR -->
+      <div class="flex items-center w-11/12 my-6">
+        <hr class="flex-1 border-gray-300" />
+        <span class="mx-2 text-gray-500">OR</span>
+        <hr class="flex-1 border-gray-300" />
+      </div>
+
+      <!-- Demo Credentials -->
+       <div class="w-11/12 text-center">
+        <h2 class="text-[#64748B]">Demo Credentials:</h2>
+        <div class=" px-8 py-4 bg-[#f1f2f3]">
+          <p><span class="font-semibold text-[16px]">Username:</span> admin</p>
+          <p><span class="font-semibold text-[16px]">Password:</span> admin123</p>
+        </div>
+       </div>
     </div>
-
-    <!-- Spinner Section -->
-    <div id="spinner" class="hidden justify-center items-center mt-14">
-      <span class="loading loading-spinner text-secondary"></span>
-    </div>
-
-    <!-- all issues container -->
-    <div
-      id="allIssues"
-      class="p-2 w-9/12 mx-auto grid grid-cols-4 gap-2  "
-    ></div>
-
-    <!-- Open issues container -->
-    <div
-      id="openIssues"
-      class="p-2 w-9/12 mx-auto hidden grid-cols-4 gap-2 "
-    ></div>
-
-    <!-- Closed issues container -->
-    <div
-      id="closedIssues"
-      class="p-2 w-9/12 mx-auto hidden grid-cols-4 gap-2 " 
-    ></div>
-
-
-
-
-
-
-    <script src="./script/script.js"></script>
   </body>
 </html>
