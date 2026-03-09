@@ -41,11 +41,13 @@
         <!-- Right: Search -->
         <div>
           <input
+            id="searchInput"
             type="text"
             placeholder="Search issues..."
             class="input w-32 md:w-auto"
           />
-          <button class="btn btn-primary">+ New Issue</button>
+          <button id="searchBtn" class="btn btn-primary hidden">Search</button>
+          <button id="newIssueBtn" class="btn btn-primary">+ New Issue</button>
         </div>
       </div>
     </section>
@@ -124,11 +126,8 @@
     <!-- Modal -->
     <input type="checkbox" id="issueModal" class="modal-toggle" />
     <div class="modal">
-      <div class="modal-box space-y-4" id="modalBox">
-
-      </div>
+      <div class="modal-box space-y-4" id="modalBox"></div>
     </div>
-
 
     <script src="./script/script.js"></script>
   </body>

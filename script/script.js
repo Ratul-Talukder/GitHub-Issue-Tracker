@@ -5,31 +5,109 @@ const closedIssuesContainer = document.getElementById("closedIssues");
 const issueCountElement = document.getElementById("issueCount");
 const modalBox = document.getElementById("modalBox");
 
-let activeTab = allIssuesContainer;
-let open = 0, closed = 0, all = 0;
+const searchBtn = document.getElementById("searchBtn");
+const newIssueBtn = document.getElementById("newIssueBtn");
+const searchInput = document.getElementById("searchInput");
 
-// Spinner manage
-const manageSpinner = (status, tab = activeTab) => {
+let activeTab = "ALL";
+let allIssues = [];
+let open = 0;
+let closed = 0;
+let all = 0;
+
+const API_URL = "https://phi-lab-server.vercel.app/api/v1/lab/issues";
+
+/* ---------------- SPINNER ---------------- */
+
+function manageSpinner(status) {
   const spinner = document.getElementById("spinner");
+
   if (status) {
     spinner.classList.remove("hidden");
     spinner.classList.add("flex");
-    tab.classList.remove("grid");
-    tab.classList.add("hidden");
   } else {
-    spinner.classList.remove("flex");
     spinner.classList.add("hidden");
-    tab.classList.remove("hidden");
-    tab.classList.add("grid");
+    spinner.classList.remove("flex");
   }
-};
+}
 
-// Tab switching
-tabContainer.addEventListener("click", function (e) {
+/* ---------------- FETCH ISSUES ---------------- */
+
+async function loadIssues() {
+  try {
+    manageSpinner(true);
+
+    const res = await fetch(API_URL);
+    const data = await res.json();
+
+    allIssues = data.data;
+
+    showIssues(allIssues);
+  } catch (error) {
+    console.error(error);
+  } finally {
+    manageSpinner(false);
+  }
+}
+
+/* ---------------- SEARCH ---------------- */
+
+async function searchIssues(query) {
+  try {
+    manageSpinner(true);
+
+    const res = await fetch(
+      `https://phi-lab-server.vercel.app/api/v1/lab/issues/search?q=${query}`
+    );
+
+    const data = await res.json();
+
+    showIssues(data.data);
+  } catch (error) {
+    console.error(error);
+  } finally {
+    manageSpinner(false);
+  }
+}
+
+/* ---------------- SEARCH EVENTS ---------------- */
+
+searchInput.addEventListener("click", () => {
+  newIssueBtn.classList.add("hidden");
+  searchBtn.classList.remove("hidden");
+});
+
+searchBtn.addEventListener("click", () => {
+  const text = searchInput.value.trim();
+
+  if (!text) {
+    showIssues(allIssues);
+    return;
+  }
+
+  searchIssues(text);
+});
+
+searchInput.addEventListener("keypress", e => {
+  if (e.key === "Enter") {
+    searchBtn.click();
+  }
+});
+
+searchInput.addEventListener("input", () => {
+  if (searchInput.value === "") {
+    showIssues(allIssues);
+  }
+});
+
+/* ---------------- TABS ---------------- */
+
+tabContainer.addEventListener("click", e => {
   const tab = e.target.closest(".btn");
   if (!tab) return;
 
   const tabs = tabContainer.querySelectorAll(".btn");
+
   tabs.forEach(t => {
     t.classList.remove("btn-primary");
     t.classList.add("text-[#64748B]");
@@ -38,134 +116,183 @@ tabContainer.addEventListener("click", function (e) {
   tab.classList.remove("text-[#64748B]");
   tab.classList.add("btn-primary");
 
-  [allIssuesContainer, openIssuesContainer, closedIssuesContainer].forEach(c => {
-    c.classList.remove("grid");
-    c.classList.add("hidden");
-  });
+  activeTab = tab.innerText.toUpperCase();
 
-  if (tab.innerText === "All") {
-    activeTab = allIssuesContainer;
-    issueCountElement.innerText = all;
-  } else if (tab.innerText === "Open") {
-    activeTab = openIssuesContainer;
-    issueCountElement.innerText = open;
-  } else {
-    activeTab = closedIssuesContainer;
-    issueCountElement.innerText = closed;
-  }
-
-  activeTab.classList.remove("hidden");
-  activeTab.classList.add("grid");
+  showActiveTab();
 });
 
-// Load issues from API
-function loadIssues() {
-  manageSpinner(true);
-  fetch("https://phi-lab-server.vercel.app/api/v1/lab/issues")
-    .then(res => res.json())
-    .then(data => showIssues(data.data))
-    .catch(err => console.error(err));
-}
-
-// Priority and status classes
-const priorityClasses = {
-  HIGH: "bg-[#FEECEC] text-[#EF4444]",
-  MEDIUM: "bg-[#FFF6D1] text-[#F59E0B]",
-  LOW: "bg-[#EEEFF2] text-[#9CA3AF]"
-};
-
-const statusClasses = {
-  OPEN: "border-t-4 border-t-green-500",
-  CLOSED: "border-t-4 border-t-purple-500"
-};
+/* ---------------- ISSUE RENDER ---------------- */
 
 function showIssues(issues) {
-  [allIssuesContainer, openIssuesContainer, closedIssuesContainer].forEach(c => c.innerHTML = "");
-  open = 0; closed = 0; all = 0;
+  allIssuesContainer.innerHTML = "";
+  openIssuesContainer.innerHTML = "";
+  closedIssuesContainer.innerHTML = "";
 
   issues.forEach(issue => {
-    const prio = issue.priority.toUpperCase();
-    const prioClass = priorityClasses[prio];
     const status = issue.status.toUpperCase();
-    const borderTop = statusClasses[status];
-    const date = new Date(issue.createdAt);
-    const formattedDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
 
-    function createIssueCard() {
-      const card = document.createElement("div");
-      card.className = `bg-white rounded-2xl shadow-md border border-gray-200 p-2 space-y-2 cursor-pointer ${borderTop}`;
+    const card = createIssueCard(issue);
+    allIssuesContainer.appendChild(card);
 
-      const statusImages = {
-        OPEN: "./assets/OPEN-Status.png",
-        CLOSED: "./assets/CLOSED-Status.png"
-      };
-      const statusImg = statusImages[status];
+    if (status === "OPEN") {
+      openIssuesContainer.appendChild(createIssueCard(issue));
+      open++;
+    } 
+    else if (status === "CLOSED") {
+      closedIssuesContainer.appendChild(createIssueCard(issue));
+      closed++;
+    }
+  });
+  all = issues.length;
 
-      card.innerHTML = `
+  showActiveTab();
+}
+
+/* ---------------- SHOW ACTIVE TAB ---------------- */
+
+function showActiveTab() {
+  const containers = [
+    allIssuesContainer,
+    openIssuesContainer,
+    closedIssuesContainer
+  ];
+
+  containers.forEach(c => {
+    c.classList.add("hidden");
+    c.classList.remove("grid");
+  });
+
+  if (activeTab === "OPEN") {
+    openIssuesContainer.classList.remove("hidden");
+    openIssuesContainer.classList.add("grid");
+  } 
+  else if (activeTab === "CLOSED") {
+    closedIssuesContainer.classList.remove("hidden");
+    closedIssuesContainer.classList.add("grid");
+  } 
+  else {
+    allIssuesContainer.classList.remove("hidden");
+    allIssuesContainer.classList.add("grid");
+  }
+
+  issueCountElement.innerText =
+    activeTab === "OPEN"
+      ? open
+      : activeTab === "CLOSED"
+      ? closed
+      : all;
+}
+
+/* ---------------- CARD ---------------- */
+
+function createIssueCard(issue) {
+  const priorityClasses = {
+    HIGH: "px-5 py-2 rounded-full font-semibold bg-[#FEECEC] text-[#EF4444]",
+    MEDIUM: "px-5 py-2 rounded-full font-semibold bg-[#FFF6D1] text-[#F59E0B]",
+    LOW: "px-5 py-2 rounded-full font-semibold bg-[#EEEFF2] text-[#9CA3AF]"
+  };
+
+  const statusClasses = {
+    OPEN: "border-t-4 border-t-green-500",
+    CLOSED: "border-t-4 border-t-purple-500"
+  };
+
+  const statusImages = {
+    OPEN: "./assets/open-Status.png",
+    CLOSED: "./assets/closed-Status.png"
+  };
+
+  const prio = issue.priority.toUpperCase();
+  const status = issue.status.toUpperCase();
+
+  const date = new Date(issue.createdAt);
+
+  const formattedDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+
+  const labelsHTML = issue.labels.map(label => `
+    <span class="px-1 py-1 rounded-full border border-yellow-400 text-red-600 text-sm font-sm flex items-center">
+      ${label.toUpperCase()}
+    </span>
+  `).join("");
+
+  const card = document.createElement("div");
+
+  card.className = `bg-white rounded-2xl shadow-md border border-gray-200 p-2 space-y-2 cursor-pointer ${statusClasses[status]}`;
+
+  card.innerHTML = `
         <div class="flex items-center justify-between">
-          <div><img src="${statusImg}" alt="${status}" /></div>
-          <span class="px-5 py-2 rounded-full ${prioClass} font-semibold">${prio}</span>
+          <div>
+            <img src="${statusImages[status]}" />
+          </div>
+          <span class="${priorityClasses[prio]}">
+            ${prio}
+          </span>
         </div>
+
         <h2 class="text-sm font-semibold">${issue.title}</h2>
-        <p class="text-sm text-[#64748B] line-clamp-2">${issue.description}</p>
+
+        <p class="text-sm text-[#64748B] line-clamp-2">
+            ${issue.description}
+        </p>
+
         <div class="flex gap-3">
-          <span class="px-4 py-1 rounded-full border border-red-300 text-red-500 text-sm font-semibold">
-            <i class="fa-solid fa-bug"></i> BUG
-          </span>
-          <span class="px-4 py-1 rounded-full border border-yellow-400 text-yellow-600 text-sm font-semibold">
-            <i class="fa-regular fa-life-ring"></i> HELP WANTED
-          </span>
+          ${labelsHTML}
         </div>
+
         <div class="border-t pt-4 text-gray-500 text-sm space-y-1">
           <p>#${issue.id} by ${issue.author}</p>
           <p>${formattedDate}</p>
         </div>
-      `;
+    `;
 
-      // Click → open modal with details
-      card.addEventListener("click", () => {
-        modalBox.innerHTML = `
-          <div class="flex items-center justify-between">
-            <div class="badge badge-soft badge-primary">${status}</div>
-            <span class="px-5 py-2 rounded-full ${prioClass} font-semibold">${prio}</span>
-          </div>
-          <h2 class="text-2xl font-semibold">${issue.title}</h2>
-          <p class="text-md text-[#64748B]">${issue.description}</p>
-          <div class="flex gap-3">
-            <span class="px-4 py-1 rounded-full border border-red-300 text-red-500 text-sm font-semibold">
-              <i class="fa-solid fa-bug"></i> BUG
-            </span>
-            <span class="px-4 py-1 rounded-full border border-yellow-400 text-yellow-600 text-sm font-semibold">
-              <i class="fa-regular fa-life-ring"></i> HELP WANTED
-            </span>
-          </div>
-          <div class="border-t pt-4 text-gray-500 text-sm space-y-1">
-            <p>#${issue.id} by ${issue.author}</p>
-            <p>${formattedDate}</p>
-          </div>
-          <div class="modal-action">
-            <label for="issueModal" class="btn btn-primary">Close</label>
-          </div>
-        `;
-        document.getElementById("issueModal").checked = true;
-      });
+  card.addEventListener("click", () => openModal(issue));
 
-      return card;
-    }
-
-    // Append cards
-    allIssuesContainer.appendChild(createIssueCard());
-    if (status === "OPEN") {
-      openIssuesContainer.appendChild(createIssueCard());
-      open++;
-    } else {
-      closedIssuesContainer.appendChild(createIssueCard());
-      closed++;
-    }
-    all++;
-  });
-
-  manageSpinner(false);
+  return card;
 }
+
+/* ---------------- MODAL ---------------- */
+
+function openModal(issue) {
+  const date = new Date(issue.createdAt);
+  const status = issue.status.toUpperCase();
+
+  const labelsHTML = issue.labels.map(label => `
+    <span class="px-1 py-1 rounded-full border border-yellow-400 text-red-600 text-sm font-sm flex items-center">
+      ${label.toUpperCase()}
+    </span>
+  `).join("");
+
+  const formattedDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+
+  modalBox.innerHTML = `
+        <div class="flex justify-between items-center">
+            <div class="badge badge-soft badge-primary">${status}</div>
+            <div class="modal-action -translate-y-2">
+              <label for="issueModal" class="btn text-red-600"><i class="fa-solid fa-xmark"></i></label>
+            </div>
+        </div>
+        
+        <h2 class="text-2xl font-bold">${issue.title}</h2>
+
+        <p class="text-gray-500">${issue.description}</p>
+
+        <div class="flex gap-3">
+          ${labelsHTML}
+        </div>
+        
+        <div class="border-t pt-3 text-sm">
+          <p>#${issue.id} by ${issue.author}</p>
+          <p>${formattedDate}</p>
+        </div>
+
+        <div class="modal-action">
+            <label for="issueModal" class="btn btn-primary">Close</label>
+        </div>
+    `;
+
+  document.getElementById("issueModal").checked = true;
+}
+
+/* ---------------- INIT ---------------- */
 
 loadIssues();
