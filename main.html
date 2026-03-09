@@ -67,14 +67,17 @@
       <!-- Left-Side -->
       <div class="flex gap-1">
         <!-- Aperture Img Container -->
-        <div class="bg-[#ECE4FF] w-[50px] h-[50px] rounded-full flex justify-center items-center">
+        <div
+          class="bg-[#ECE4FF] w-[50px] h-[50px] rounded-full flex justify-center items-center"
+        >
           <img src="./assets/Aperture.png" alt="" />
         </div>
-        
+
         <!-- Dynamic Issue Count -->
         <div>
           <h2 class="text-2xl font-bold">
-            <span id="issueCount">50</span> <span class="font-semibold">Issues</span>
+            <span id="issueCount">50</span>
+            <span class="font-semibold">Issues</span>
           </h2>
           <p class="text-sm text-gray-500">
             Track and manage your project issues
@@ -89,7 +92,7 @@
           <span class="text-sm">Open</span>
         </div>
         <div class="flex items-center gap-2">
-          <span class="badge badge-secondary badge-xs"></span>
+          <span class="badge bg-purple-500 badge-xs"></span>
           <span class="text-sm">Closed</span>
         </div>
       </div>
@@ -101,7 +104,10 @@
     </div>
 
     <!-- all issues container -->
-    <div id="allIssues" class="p-2 w-9/12 mx-auto grid grid-cols-4 gap-2"></div>
+    <div
+      id="allIssues"
+      class="p-2 w-9/12 mx-auto grid grid-cols-4 gap-2 shadow-xl"
+    ></div>
 
     <!-- Open issues container -->
     <div
@@ -114,6 +120,15 @@
       id="closedIssues"
       class="p-2 w-9/12 mx-auto hidden grid-cols-4 gap-2"
     ></div>
+
+    <!-- Modal -->
+    <input type="checkbox" id="issueModal" class="modal-toggle" />
+    <div class="modal">
+      <div class="modal-box space-y-4" id="modalBox">
+
+      </div>
+    </div>
+
 
     <script src="./script/script.js"></script>
   </body>
