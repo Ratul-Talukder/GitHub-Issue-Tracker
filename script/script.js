@@ -2,7 +2,10 @@ const tabContainer = document.getElementById("tabContainer");
 const allIssuesContainer = document.getElementById("allIssues");
 const openIssuesContainer = document.getElementById("openIssues");
 const closedIssuesContainer = document.getElementById("closedIssues");
-let activeTab = allIssuesContainer; // use let, not const
+const issueCountElement = document.getElementById("issueCount");
+
+let activeTab = allIssuesContainer;
+let open = 0,closed = 0,all = 0;
 
 // Spinner manage
 const manageSpinner = (status, tab = activeTab) => {
@@ -39,9 +42,20 @@ tabContainer.addEventListener("click", function (e) {
         c.classList.add("hidden");
     });
 
-    if (tab.innerText === "All") activeTab = allIssuesContainer;
-    else if (tab.innerText === "Open") activeTab = openIssuesContainer;
-    else activeTab = closedIssuesContainer;
+    if (tab.innerText === "All") {
+        activeTab = allIssuesContainer;
+        issueCountElement.innerText = all;
+    }
+        
+    else if (tab.innerText === "Open") {
+        activeTab = openIssuesContainer;
+        issueCountElement.innerText = open;
+    }
+    else {
+        activeTab = closedIssuesContainer;
+        issueCountElement.innerText = closed;
+    }
+        
 
     activeTab.classList.remove("hidden");
     activeTab.classList.add("grid");
@@ -55,8 +69,6 @@ function loadIssues() {
         .then(data => showIssues(data.data))
         .catch(err => console.error(err));
 }
-
-loadIssues();
 
 // Priority and status classes
 const priorityClasses = {
@@ -109,10 +121,20 @@ function showIssues(issues) {
 
         // Append cards
         allIssuesContainer.appendChild(createIssueCard());
-        if (status === "OPEN") openIssuesContainer.appendChild(createIssueCard());
-        else closedIssuesContainer.appendChild(createIssueCard());
+        if (status === "OPEN") {
+            openIssuesContainer.appendChild(createIssueCard());
+            open++;
+        }
+        else {
+            closedIssuesContainer.appendChild(createIssueCard());
+            closed++;
+        }
+        all++;
+            
     });
 
     // Hide spinner
     manageSpinner(false);
 }
+
+loadIssues();

@@ -60,33 +60,60 @@
       <button class="btn text-[#64748B]">Closed</button>
     </div>
 
+    <!-- Issue Tracker Section -->
+    <section
+      class="mt-4 p-4 w-9/12 mx-auto bg-base-100 shadow-xl flex justify-between"
+    >
+      <!-- Left-Side -->
+      <div class="flex gap-1">
+        <!-- Aperture Img Container -->
+        <div class="bg-[#ECE4FF] w-[50px] h-[50px] rounded-full flex justify-center items-center">
+          <img src="./assets/Aperture.png" alt="" />
+        </div>
+        
+        <!-- Dynamic Issue Count -->
+        <div>
+          <h2 class="text-2xl font-bold">
+            <span id="issueCount">50</span> <span class="font-semibold">Issues</span>
+          </h2>
+          <p class="text-sm text-gray-500">
+            Track and manage your project issues
+          </p>
+        </div>
+      </div>
+
+      <!-- Status Indicators -->
+      <div class="flex gap-6 mt-4">
+        <div class="flex items-center gap-2">
+          <span class="badge badge-success badge-xs"></span>
+          <span class="text-sm">Open</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="badge badge-secondary badge-xs"></span>
+          <span class="text-sm">Closed</span>
+        </div>
+      </div>
+    </section>
+
     <!-- Spinner Section -->
     <div id="spinner" class="hidden justify-center items-center mt-14">
       <span class="loading loading-spinner text-secondary"></span>
     </div>
 
     <!-- all issues container -->
-    <div
-      id="allIssues"
-      class="p-2 w-9/12 mx-auto grid grid-cols-4 gap-2  "
-    ></div>
+    <div id="allIssues" class="p-2 w-9/12 mx-auto grid grid-cols-4 gap-2"></div>
 
     <!-- Open issues container -->
     <div
       id="openIssues"
-      class="p-2 w-9/12 mx-auto hidden grid-cols-4 gap-2 "
+      class="p-2 w-9/12 mx-auto hidden grid-cols-4 gap-2"
     ></div>
 
     <!-- Closed issues container -->
     <div
       id="closedIssues"
-      class="p-2 w-9/12 mx-auto hidden grid-cols-4 gap-2 " 
+      class="p-2 w-9/12 mx-auto hidden grid-cols-4 gap-2"
     ></div>
-
-
-
-
-
 
     <script src="./script/script.js"></script>
   </body>
